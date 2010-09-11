@@ -1,0 +1,3 @@
+main = x
+  where
+  area x :: APtr 30 (Table 8 (Stored (Bit 32)))

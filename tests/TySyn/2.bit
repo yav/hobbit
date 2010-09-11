@@ -1,0 +1,15 @@
+data Z    = Z
+data S a  = S a
+
+type S2 a = S (S a)
+type S4 a = S2 (S2 a)
+type S8 a = S4 (S4 a)
+type S16 a = S8 (S8 a)
+type S32 a = S16 (S16 a)
+type S64 a = S32 (S32 a)
+type S128 a = S64 (S64 a)
+
+
+main :: S32 Z
+main = Z
+

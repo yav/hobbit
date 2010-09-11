@@ -1,0 +1,8 @@
+type Int    = Stored (Bit 32)
+type Point  = { x :: Int, y :: Int }
+
+area thePoint :: APtr 32 Point
+
+main        = thePoint.y
+
+

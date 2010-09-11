@@ -1,0 +1,6 @@
+type T a = { x :: Stored (Bit 8) | a }
+
+area x :: APtr 32 (T (T (Pad 0)))
+
+main = x.x
+

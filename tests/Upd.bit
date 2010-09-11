@@ -1,0 +1,11 @@
+bitdata T   = C { x :: Bit 2, y :: Bit 3 }
+
+a x         = { x | x = 2 }
+b x         = C x
+c x         = C { x | x = 2 }
+d           = C { x = 1, y = 2 }
+e x         = { x | a = 1, b = 2, c = 3 }
+
+
+
+

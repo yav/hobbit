@@ -1,0 +1,12 @@
+import Prelude
+
+f x = x
+  where
+  v :: a
+  v = x
+
+z :: Bit 32
+z = f 2
+
+main = done
+

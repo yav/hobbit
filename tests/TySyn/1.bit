@@ -1,0 +1,6 @@
+type T = Bit 32
+
+main :: T
+main = 2
+
+

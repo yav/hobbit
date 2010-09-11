@@ -1,0 +1,6 @@
+let ap2 (x::Int -> Int -> Int) :: Int = x 1 2 in
+let id2 (x::Int) :: Int = x in
+let const (x::Int) :: Int -> Int = id2 in
+ap2 const 
+
+

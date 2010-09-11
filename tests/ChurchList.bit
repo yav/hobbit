@@ -1,0 +1,37 @@
+import Prelude
+
+data L r a    = L ((a -> r -> r) -> r -> r)
+
+nil           = L (\cons nil -> nil)
+cons x (L xs) = L (\cons nil -> cons x (xs cons nil))
+hd (L xs)     = xs (\x _ -> Just x) Nothing
+
+
+tl (L xs)     = L comp
+  where 
+  comp cons nil = xs cons' nil' False
+    where 
+{- 
+    cons' x xs True   = case xs True of
+                          Nothing -> Nothing
+                          -- Just xs -> Just (cons x xs) 
+    cons' x xs False  = xs True 
+-}
+    cons' x = cons' x
+
+    nil' True          = Just nil
+    nil' False         = Nothing
+
+fromMaybe n Nothing   = n
+fromMaybe _ (Just x)  = x
+  
+list = cons 'a' nil
+
+len (L f) = f (\_ n -> 1 + n) 0
+
+main = do return (trace 10 (len (fromMaybe nil (tl list)) :: Bit 32))
+          done
+
+
+
+

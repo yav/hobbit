@@ -1,0 +1,9 @@
+
+
+f :: (1 + x = y) => Bit y -> x
+f ( (x :: Bit 1) # xs)  = xs
+
+-- main :: Bit 32
+main = f B00 
+
+

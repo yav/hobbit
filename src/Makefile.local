@@ -1,0 +1,5 @@
+GHC = ghc
+ALEX = alex
+HAPPY = happy
+
+

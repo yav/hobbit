@@ -1,0 +1,5 @@
+let x :: Int = 2 in
+let f (y::Int) (z::Int) :: Int = x + y
+in f 3
+
+

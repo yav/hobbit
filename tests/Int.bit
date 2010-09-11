@@ -1,0 +1,17 @@
+bitdata T = C { x :: Bit 15, y = 7 :: Bit 16 } as y # B0 # x
+
+-- main :: Bit 16
+-- main = f (10 :: Bit 32)
+-- f (x # y) = x
+
+main :: Bit 15
+main = f (C { x = 10 })
+
+-- f (C { x = x }) = x
+f (C x) = g { x | x = 8 }
+
+g { x = x } = x 
+
+
+
+

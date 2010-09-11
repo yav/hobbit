@@ -1,0 +1,3 @@
+let const (x::Int) (y::Char) :: Int = x 
+in const 1 'a'
+

@@ -1,0 +1,16 @@
+import Prelude
+
+f x = g (B00 # (x::Bit 0))
+  where
+  g :: Width a => Bit a -> Bool
+  g y = y == 0 # x
+
+
+z = f 2
+
+main = done
+
+
+
+
+

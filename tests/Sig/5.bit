@@ -1,0 +1,12 @@
+import Prelude
+
+main = done
+
+z :: Bool
+z = f (0 :: Bit 16)
+
+f x = (x # x) == (8 :: Bit 32)
+
+
+
+

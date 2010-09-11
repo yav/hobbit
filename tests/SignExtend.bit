@@ -1,0 +1,10 @@
+neg x             = 0 - x
+
+signExt (B0 # xs) = 0 # xs
+signExt (B1 # xs) = neg 1 # xs
+
+zeroExt x         = 0 # x
+
+bitdata Bool      = False as 0 :: Bit 32
+
+

@@ -1,0 +1,116 @@
+two         = 2
+
+fourty_two :: Bit 1
+fourty_two  = 42
+ 
+zero       :: Bit 1
+zero        = 0
+
+three       = B11
+three1      = B011
+
+noBits      = NoBits
+
+upper16        :: Bit 32 -> Bit 16
+upper16 (x # _) = x
+
+upper (x # _)   = x
+
+
+bitdata Thing   = Foo { x = 42 :: Bit 16, y :: Bit 8 }
+                | Bar as 2
+
+
+inc            :: Thing -> Thing
+inc Bar         = Bar
+inc (Foo r)     = Foo { r | x = r.x + 1 }
+
+mask x y        = (x # y) & B101
+
+pciBus         :: Bit 16 -> Bit 5
+pciBus ((dev :: Bit 8) # bus # fun) = bus
+
+bitdata RemoteOp  = Read       as B01
+                  | Write      as B10
+                  | SendPacket as B11
+
+
+showOp Read       = "Read"
+showOp Write      = "Write"
+showOp SendPacket = "SendPacket"
+showOp _          = "Unknown"
+
+bitdata DMACmd    = Remote { op :: RemoteOp } as B0 # op
+                  | AbortDMA                  as B1 # 0 -- _
+
+readToWrite (Remote { op = Read }) = Remote { op = Write }
+readToWrite x                      = x
+
+bitdata MyBool = MyFalse | MyTrue
+
+
+(>=) x y        = y <= x
+
+bitdata Bool    = False as 0 :: Bit 32 | True as 1
+
+(||) False x    = x
+(||) _ _        = True
+
+(&&) False _    = False
+(&&) _ False    = False
+(&&) _ _        = True
+
+not False       = True
+not _           = False 
+
+(/=) x y        = not (x == y)
+
+isMemHL MemHL   = True
+isMemHL _       = False
+
+bitdata Instr   = LD  { dst::Reg, src::Reg } 
+                  as B01 # dst # src
+                  if not (isMemHL src && isMemHL dst)
+                | HALT as 0x76
+
+
+instrName (LD _)  = "Load"
+instrName HALT    = "Halt"
+
+getLD (LD r)    = r
+
+setSrc (LD r) x = LD { r | src = x }
+setSrc i _      = i
+
+fromHL (LD { r | src = MemHL })   = r.dst
+fromHL _                          = MemHL
+
+
+bitdata Reg     = A as B111 | B as B000 | C as B001 | D as B010
+                | E as B011 | H as B100 | L as B101 | MemHL as B110
+
+
+{-
+bitdata Perms   = Perms { r :: Bit 1, w :: Bit 1, x :: Bit 1 }
+dftPerms        = Perms { r = 0, w = 0, x = 0 }
+
+bitdata Fpage   = Fpage 
+                    { base  :: Bit 20
+                    , size  :: Bit 6
+                    , perms :: Perms
+                    } as base # B00 # size # B0 # perms 
+                      if size >= 12
+                | Complete 
+                    { perms = dftPerms :: Perms 
+                    } as 1 # B0 # perms
+                | Nilpage as 0
+
+getSize (Fpage f) = f.size
+getSize _         = 0
+-}
+
+
+add x y           = (0 # x) + (0 # y)
+
+
+

@@ -1,0 +1,6 @@
+import Prelude
+
+bitdata T = C { x :: Bit 30 } as x # B00
+
+main = done
+

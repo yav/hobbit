@@ -1,0 +1,5 @@
+type T = S
+type S = T
+
+main = B0
+

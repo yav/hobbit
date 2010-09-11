@@ -1,0 +1,3 @@
+area x :: APtr 32 Bool
+
+main = B00

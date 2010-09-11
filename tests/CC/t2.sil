@@ -1,0 +1,3 @@
+let y :: Int = 2 in
+let { f (x::Int) :: Int = let z :: Int = x + y in f z } 
+in f

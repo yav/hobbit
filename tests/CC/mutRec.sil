@@ -1,0 +1,7 @@
+let id (x::Int -> Int) :: Int -> Int = x in
+let { f (x :: Int) :: Int = id f x
+    } 
+in f 2
+
+
+

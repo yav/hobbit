@@ -1,0 +1,8 @@
+bitdata T = T { x :: Bit 12 } if x == z
+
+z         = 2
+f x (T a) = x
+
+
+bitdata Bool  = False as 0 :: Bit 32
+

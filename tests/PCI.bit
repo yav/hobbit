@@ -1,0 +1,16 @@
+bits PCIAddr        = PCIAddr
+                    { bus :: Bit 8
+                    , dev :: Bit 5
+                    , fun :: Bit 3
+                    }
+
+bits AimPCI         = AimPCI
+                    { devFun      :: PCIAddr
+                    , wordOffset  :: Bit 6
+                    } as B1 # 0 # devFun # wordOffset # B00 :: Bit 32
+
+f = toBits (AimPCI { devFun     = PCIAddr { bus = 1, dev = 2, fun = 3 }
+                   , wordOffset = 4
+                   })
+                
+

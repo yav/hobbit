@@ -1,0 +1,12 @@
+let add (x :: Int) (y :: Int) :: Int = x + y in
+let { foldr (c :: Int -> Int -> Int) (n :: Int) (xs :: List_Int) :: Int = 
+        case xs of
+          { Nil_Int -> n
+          ; Cons_Int (y :: Int) (ys :: List_Int) -> 
+              let z :: Int = foldr c n ys in c y z
+          } :: Int
+    } in
+foldr add 0 
+
+
+

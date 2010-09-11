@@ -1,0 +1,10 @@
+import Prelude
+
+bitdata PCI = PCI { bus :: Bit 8, dev :: Bit 5, fn :: Bit 3 }
+
+getBus (PCI { bus = x }) = x
+
+main = do return (trace 10 (getBus (fromBits 256)))
+          done
+
+ 

@@ -1,0 +1,17 @@
+import M
+import Pair
+
+type Ptr = APtr 32
+area x :: Ptr (Table 256 (Stored (Bit 8)))
+
+
+main :: Pair (Bit 32) (Bit 32)
+main = runM (writeRef (x@0) 1 >> 
+             writeRef (x@1) 2 >>
+             (let x' = split x in
+             readRef (x'@0) >>= (\v = 
+             return (Pair v ((1 :: Bit 8) # (2 :: Bit 8) # 0)))
+             )
+            )
+
+  

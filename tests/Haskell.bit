@@ -1,0 +1,40 @@
+id       :: a -> a
+id x      = x
+
+const x y = x
+
+undefined x = undefined x
+
+test      = id id id
+
+-- map f Nil                           = Nil
+-- map f Cons { head = x, tails = xs } = Cons { head = f x, tail = map f xs }
+
+
+data List a = Nil | Cons a (List a)
+
+
+true        = fromBits 1 :: Bool
+otherwise   = true
+
+
+bitdata Bool  = False as 0 :: Bit 32 
+
+
+z x = x == B1
+
+
+map f Nil = Nil
+map f (Cons x xs) = Cons (f x) (map f xs)
+
+
+filter p Nil  = Nil
+filter p (Cons x xs)
+  | p x       = Cons x rest
+  | otherwise = rest
+  where 
+  rest = filter p xs
+
+
+
+

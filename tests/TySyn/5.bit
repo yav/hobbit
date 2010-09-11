@@ -1,0 +1,4 @@
+type T a = Bit 32
+type S   = T
+
+

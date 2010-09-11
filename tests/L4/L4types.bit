@@ -1,0 +1,89 @@
+-------------------------------------------------------------------------------
+-- This file contains a whole bunch of bitdata types from the L4 specification
+--
+
+
+main :: Bit 32
+main  = 0
+
+
+bitdata Boolean  = No as B0 | Yes as B1
+
+bitdata Perms = Perms { r::Boolean, w::Boolean, x::Boolean }
+
+-- Hmm, is there a version of this for 64 bit machines?
+bitdata APIVersion
+  = APIVersion { version :: Bit 8, subversion :: Bit 8 }
+    as version # subversion # _
+    :: Bit 32
+
+bitdata APIFlags 
+  = APIFlags { ee :: EE, ww :: EE }
+    as (_ :: Bit 28) # ee # ww
+
+bitdata EE = LittleEndian as B00 | BigEndian as B01
+bitdata WW = Width32      as B00 | Width64   as B01
+
+bitdata ProcessorInfo
+  = ProcessorInfo { s::Bit 4, lastProc::Bit 16 } 
+    as s # (_::Bit 12) # lastProc
+
+bitdata PageInfo
+  = PageInfo { pageSizeMask :: Bit 22, perms :: Perms }
+    as pageSizeMask # (_::Bit 7) # perms
+
+bitdata ThreadInfo
+  = ThreadInfo { userBase::Bit 12, systemBase::Bit 12, t::Bit 8 }
+
+bitdata ClockInfo
+  = ClockInfo { schedulePrecision::Time, readPrecision::Time }
+
+bitdata UtcbInfo
+  = UtcbInfo { s::Bit 6, a::Bit 6, m::Bit 10 }
+    as _ # s # a # m
+    :: Bit 32
+
+bitdata KipAreaInfo
+  = KipAreaInfo { s::Bit 6 }
+    as (_ # s) :: Bit 32
+
+bitdata KernelId
+  = KernelId { id::Bit 8, subid::Bit 8 }
+    as (id # subid # _) :: Bit 32
+
+bitdata KernelGenDate
+  = KernelGenDate { yearMinus2k::Bit 7, month::Bit 4, day::Bit 5}
+    as (_ # yearMinus2k # month # day) :: Bit 32
+
+bitdata KernelVer
+  = KernelVer { ver::Bit 8, subver::Bit 8, subsubver::Bit 16 }
+
+bitdata MemoryInfo
+  = MemoryInfo { memDescPtr::Bit 16, numDescriptors::Bit 16 }
+
+bitdata MemoryDescLo
+  = MemoryDescLo { low::Bit 22, virtual::Boolean, mdType :: MemDescType }
+    as (low # virtual # B0 # mdType)
+bitdata MemoryDescHi
+  = MemoryDescHi { high::Bit 22 }
+    as (high # _) :: Bit 32
+
+bitdata MemDescType
+  = UndefinedMemoryType                             as 0x00 :: Bit 8
+  | ConventionalMemoryType                          as 0x01
+  | ReservedMemoryType                              as 0x02
+  | DedicatedMemoryType                             as 0x03
+  | SharedMemoryType                                as 0x04
+  | BootLoaderSpecificMemoryType   { t :: Bit 4 }   as t # 0xE
+  | ArchitectureSpecificMemoryType { t :: Bit 4 }   as t # 0xF
+
+bitdata Time = Now 
+               as B0 # (1 :: Bit 5) # 0
+             | Period { e::Bit 5, m::Bit 10 }
+               as B0 # e # m
+             | Point  { e::Bit 4, c::Bit 1, m::Bit 10 }
+               as B1 # e # c # m
+             | Never
+               as 0
+
+-------------------------------------------------------------------------------

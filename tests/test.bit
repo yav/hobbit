@@ -1,0 +1,43 @@
+module Main where
+
+import Prelude
+import IO
+
+data N    = Z | S N
+
+pr :: N -> M (Bit 0)
+pr Z      = putChar 'Z'
+pr (S n)  = do putChar 'S'
+               pr n
+
+unfoldN s f = case f s of
+                Just s1 -> S (unfoldN s1 f)
+                Nothing -> Z
+
+foldN s z Z = z
+foldN s z (S n) = foldN s (s z) n
+
+addN x y = foldN S y x
+
+mk :: Nat -> N
+mk n = unfoldN n next
+  where next 0 = Nothing
+        next n = Just (n-1)
+
+unmk :: N -> Bit 32
+unmk x = foldN (\x -> x + 1) 0 x
+
+debug x = return (trace 10 (unmk x))
+
+test :: M Nat -> M Nat
+test x = x
+
+main :: M (Bit 0)
+main = do test (debug (addN (mk 5000) (mk 501)))
+          done
+
+
+
+
+
+

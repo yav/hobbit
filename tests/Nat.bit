@@ -1,0 +1,59 @@
+import Prelude hiding (fold)
+
+
+data Nat            = Zero | Succ Nat
+
+main               :: Bit 32
+main                = trace 10 (fromNat1 (fact m10) 0)
+
+{-
+fromNat            :: Nat -> Bit 32 -> Bit 32
+fromNat Zero n     = n
+fromNat (Succ x) n = fromNat x (n+1)
+
+n1                  = Succ Zero
+n2                  = addNats n1 n1
+n3                  = addNats n1 n2
+n4                  = mulNats n2 n2
+n16                 = mulNats n4 n4
+n32                 = addNats n16 n16
+n64                 = mulNats n4 n16
+n256                = mulNats n16 n16
+
+addNats Zero y      = y
+addNats (Succ x) y  = addNats x (Succ y)
+
+mulNats Zero y      = Zero
+mulNats (Succ Zero) y = y
+mulNats (Succ n) y    = addNats y (mulNats n y)
+-}
+
+fold s Zero a       = a
+fold s (Succ x) a   = fold s x (s a)
+
+inc x               = x + 1
+
+fromNat1            = fold inc 
+addNats1            = fold Succ 
+mulNats1 x y        = fold (addNats1 x) y Zero
+
+m1                  = Succ Zero
+m2                  = addNats1 m1 m1
+m3                  = addNats1 m1 m2
+m4                  = mulNats1 m2 m2
+m6                  = addNats1 m2 m4 
+m8                  = mulNats1 m2 m4 
+m9                  = Succ m8
+m10                 = addNats1 m2 m8
+m16                 = mulNats1 m4 m4
+m32                 = addNats1 m16 m16
+m64                 = mulNats1 m4 m16
+m256                = mulNats1 m16 m16
+
+
+fact Zero           = m1
+fact (Succ n)       = mulNats1 (Succ n) (fact n)
+
+
+
+

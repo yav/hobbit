@@ -1,0 +1,8 @@
+import Prelude
+
+bitdata T   = Word32 { x :: Bit 32 }
+            | Word16 { upper :: Bit 16, lower :: Bit 16 }
+
+main = done
+
+

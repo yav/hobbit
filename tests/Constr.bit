@@ -1,0 +1,18 @@
+bits Pair     = Pair { fst :: Bit 2, snd :: Bit 3 = 3 }
+
+a             = Pair
+b x           = Pair x
+c             = Pair { fst = 1, snd = 2 }
+d             = Pair { fst = 1 }
+
+-- e             = Pair {}
+-- f             = Pair { fst = 1, sdn = 2 }
+-- g             = Pair { fst = 2, fst = 3 }
+
+
+
+
+
+
+
+

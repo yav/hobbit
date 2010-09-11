@@ -1,0 +1,106 @@
+module Prims where
+
+import Prelude
+
+
+-- see "Type.Instances" and "Type.Algs.byAxiom" for rules to discharge preds.
+
+
+primitive (->)     :: Type -> Type -> Type
+primitive Bit      :: Nat -> Type
+primitive Ix       :: Nat -> Type
+primitive ARef     :: Nat -> Area -> Type
+
+primitive (:+)     :: Nat -> Nat -> Nat -> Pred     -- ev: None
+primitive (:*)     :: Nat -> Nat -> Nat -> Pred     -- ev: None
+primitive Exp2     :: Nat -> Nat -> Pred            -- ev: None
+primitive GCD      :: Nat -> Nat -> Nat -> Pred     -- ev: None
+
+primitive Width    :: Nat -> Pred                   -- ev: the number
+primitive Align    :: Nat -> Pred                   -- ev: the number
+primitive DNat     :: Nat -> Pred
+
+
+primitive Index    :: Nat -> Pred                   -- ev: the number
+primitive bitIx    :: (Width m, 2 ^ m = n, Index n) => Bit m -> Ix n
+
+primitive Field    :: Label -> Type -> Type -> Pred
+-- access l :: r -> Field l r
+
+primitive UpdField :: Label -> Type -> Type -> Pred
+-- update l :: r -> UpdField l r -> r
+
+primitive Literal  :: Type -> Pred
+primitive fromNat  :: Literal a => Nat -> a  
+
+primitive Eq       :: Type -> Pred
+primitive (==)     :: Eq a => a -> a -> Bool 
+primitive (/=)     :: Eq a => a -> a -> Bool
+
+primitive Ord      :: Type -> Pred
+primitive (<)      :: Ord a => a -> a -> Bool
+primitive (<=)     :: Ord a => a -> a -> Bool
+primitive (>)      :: Ord a => a -> a -> Bool
+primitive (>=)     :: Ord a => a -> a -> Bool
+
+primitive Num      :: Type -> Pred
+primitive (+)      :: Num a => a -> a -> a
+primitive (-)      :: Num a => a -> a -> a
+primitive neg      :: Num a => a -> a
+primitive (*)      :: Num a => a -> a -> a
+primitive (/)      :: Num a => a -> a -> a
+
+primitive BitOps   :: Type -> Pred
+primitive (<<)     :: BitOps a => a -> Bit 5 -> a     -- XXX: Bit 5?
+primitive (>>)     :: BitOps a => a -> Bit 5 -> a 
+primitive (&)      :: BitOps a => a -> a -> a
+primitive (!)      :: BitOps a => a -> a -> a
+primitive (^)      :: BitOps a => a -> a -> a
+primitive ~        :: BitOps a => a -> a -> a
+
+primitive Bounded  :: Type -> Pred
+primitive minVal   :: Bounded a => a
+primitive maxVal   :: Bounded a => a
+
+primitive BitRep   :: Type -> Nat -> Pred
+primitive toBits   :: BitRep a n => a -> Bit n 
+
+primitive BitData  :: Type -> Nat -> Pred
+primitive fromBits :: BitData a n => Bit n -> a 
+-- XXXX: primitive isJunk :: (BitData a n) => a -> Bool
+
+primitive (:#)     :: Nat -> Nat -> Nat -> Pred
+primitive (#)      :: (a # b = c) => Bit a -> Bit b -> Bit c 
+
+primitive SizeOf   :: Area -> Nat -> Pred       -- ev: bytes
+primitive sizeOf   :: SizeOf t n => ARef a t -> Bit 32
+primitive memZero  :: (Align a, SizeOf t n) => ARef a t -> M None
+primitive memCopy  :: (Align a, SizeOf t n) => ARef a t -> ARef b t -> M None
+
+primitive AreaDecl :: Type -> Pred              -- ev: (alignment,bytes)
+
+primitive Bytes       :: Area -> Pred
+type BytesFor t        = Array (SizeOf t) (Stored (Bit 8))
+primitive fromBytes   :: Bytes t => ARef a (BytesFor t) -> ARef a t
+primitive toBytes     :: Bytes t => ARef a t -> ARef a (BytesFor t)
+
+primitive Array    :: Nat -> Area -> Area
+primitive (@)      :: (Align a, Align b, SizeOf t n, GCD n a b) => 
+                           ARef a (Array i t) -> Ix i -> ARef b t
+
+
+primitive LE        :: Type -> Area
+primitive BE        :: Type -> Area
+
+primitive ValIn     :: Area -> Type -> Pred
+primitive readRef   :: (Align a, ValIn r t) => ARef a r -> M t
+primitive writeRef  :: (Align a, ValIn r t) => ARef a r -> t -> M None
+
+
+-- Monadic ---------------------------------------------------------------------
+primitive M        :: Type -> Type
+primitive return   :: a -> M a
+
+-- 'trace' is impure, it is just for testing.
+primitive trace    :: Width a => Bit 4 -> Bit a -> Bit a
+   

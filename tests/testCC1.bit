@@ -1,0 +1,11 @@
+f :: Bit 2 -> Bit 2 -> Bit 2
+f x y = z + g y
+  where 
+  g = f x
+
+z = B00
+
+main = f B00 B00
+
+
+

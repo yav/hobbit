@@ -1,0 +1,8 @@
+type Ptr    = APtr 32
+type DWord  = Stored (Bit 32)
+
+area x :: Ptr (Table 8 DWord)
+
+main        = x
+
+

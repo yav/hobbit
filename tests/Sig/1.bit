@@ -1,0 +1,11 @@
+import Prelude
+
+id :: a -> a
+id x = x
+
+f = id id
+
+z :: Bit 32
+z = f 2
+
+main = done

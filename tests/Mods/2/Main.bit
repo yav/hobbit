@@ -1,0 +1,6 @@
+import A
+
+main :: A
+main = A.A
+
+

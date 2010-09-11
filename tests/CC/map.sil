@@ -1,0 +1,12 @@
+let { 
+   map (f :: Int -> Char) (xs :: List_Int) :: List_Char = 
+    case xs of 
+      { Nil_Int -> Nil_Char
+      ; Cons_Int (y :: Int) (ys :: List_Int) -> 
+          let a :: Char       = f y in
+          let b :: List_Char  = map f xs in
+          Cons_Char a b
+      } :: List_Char
+} in map
+
+

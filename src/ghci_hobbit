@@ -1,0 +1,27 @@
+:load Interact.hs 
+(putStrLn . UI.Logo.logo) =<< Random.randomRIO (1::Int,6)
+
+:def :load   (\x -> return ("file <- loadFiles [CmdArgs.InPath \"../lib\"]" ++ show (words x)))
+
+:def :rules  cmd "showRules"         {- Show rules -}
+
+:def :type   pCmd "curry showType"   {- Show the type of a value (no arg: all)-}
+:def :kind   pCmd "showKind"         {- Show the kind of a type  (no arg: all)-}
+:def :data   pCmd "showData"          {- Show the definition of a datatype -}
+:def :def    pCmd "print =<< getBind" {- Show the definition of a binding -}
+
+-- Show the cover set for a type/constructor
+:def :tcover pCmd "(showCover . bdtCover) =<< getBDT"
+:def :ccover pCmd "(showCover . bcCover . snd) =<< findBCon"
+
+:def :sdata   cmd "showSpecADTs"      {- Show specialized algebraic types -}
+:def :sbinds  cmd "showSpecBinds"     {- Show specialized bindings -}
+:def :sil     cmd "showSIL"           {- Show sequentialized bindings -}
+
+:def :funs    cmd "showFuns"          {- Show function type definitions -}
+:def :closure cmd "showClosure"       {- Show closure converted program -}
+:def :save pCmd "saveCode"            {- Save the code for current file -}
+
+:def :run     cmd "runProg"           {- Run the program -}
+
+:def :help (\_ -> return ":!cat ghci_hobbit")

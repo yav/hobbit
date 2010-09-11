@@ -1,0 +1,19 @@
+bits CmdReg         = Cmd
+                    { page      :: Bit 2
+                    , dmaCmd    :: DMACmd
+                    , txPacket  :: Bit 1
+                    , stateCmd  :: CardState
+                    }
+
+bits DMACmd         = Remote { op :: RemoteOp } as B0 # op
+                    | AbortDMA                  as B1 # _   
+
+bits RemoteOp       = Read        as B01
+                    | Write       as B10
+                    | SendPacket  as B11
+
+bits CardState      = Off as B01
+                    | On  as B10
+
+
+

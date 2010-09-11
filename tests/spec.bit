@@ -1,0 +1,22 @@
+data List a = Nil | Cons a (List a)
+
+map f Nil         = Nil
+map f (Cons x xs) = Cons (f x) (map f xs)
+
+
+
+data A = A
+
+id x = x
+
+const x y = x
+
+x = B0
+
+
+f = s B0
+  where
+  s = show
+
+
+

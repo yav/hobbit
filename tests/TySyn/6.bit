@@ -1,0 +1,5 @@
+type T  = D
+data D  = D T
+
+main = B0
+

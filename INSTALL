@@ -1,0 +1,27 @@
+XXX: Out of date
+
+To compile 'hobbit', you will need to create a file called 'Makefile.local' 
+in the drectory 'src'.  This file contains specifics about your system.
+In it you need to specify the locations of the tools you are using.  
+In addition you may use the variable 'LOCAL_OPTS' to give additional
+options to the compiler.  Mostly these would be CPP directives specifying
+what nicities work on your system.  
+You may enable each by defining the corresponding symbol.
+
+Nicities:
+READLINE    - use the readline library
+
+You may also want to modify the file 'Opts.hs' for additional options.
+
+
+For example, here is my Makefile.local:
+
+GHC = ghc
+ALEX = alex
+HAPPY = happy
+
+LOCAL_OPTS = -DREADLINE=1
+
+
+
+

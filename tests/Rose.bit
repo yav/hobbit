@@ -1,0 +1,9 @@
+data List a         = Nil | Cons a (List a)
+data Tree a         = Node a (List a)
+
+mapList f Nil         = Nil
+mapList f (Cons x xs) = Cons (f x) (mapList f xs)
+
+mapTree f (Node a ts) = Node (f a) (mapList (mapTree f) ts)
+
+

@@ -1,0 +1,45 @@
+import List
+import Maybe
+import Pair 
+
+bitdata Bool                  = False as 0 :: Bit 32
+true                          = fromBits 1
+
+
+decode            :: List (Bit 8) -> Maybe (Pair (Bit 32) (List (Bit 8)))
+decode (Cons (B0     # as) 
+             bytes)           = Just (Pair (0 # as) bytes)
+
+decode (Cons (B110   # as) 
+       (Cons (B10    # bs) bytes))          
+        | 0x80 <= result      = Just (Pair result bytes)
+        where result          = 0 # as # bs :: Bit 32
+
+decode (Cons (B1110  # as)
+       (Cons (B10    # bs)
+       (Cons (B10    # cs) bytes)))         
+        | 0x800 <= result     = Just (Pair result bytes)
+        where result          = 0 # as # bs # cs :: Bit 32
+
+decode (Cons (B11110 # as)
+       (Cons (B10    # bs)
+       (Cons (B10    # cs)
+       (Cons (B10    # ds) bytes))))        
+        | 0x10000 <= result   = Just (Pair result bytes)
+        where result          = 0 # as # bs # cs # ds :: Bit 32
+
+decode _                      = Nothing
+
+
+decodeStream xs decoded       = try (decode xs) 
+  where
+  try Nothing                 = Pair decoded xs
+  try (Just (Pair c cs))      = decodeStream cs (Cons c decoded) 
+
+
+
+list = Cons 32 (Cons 32 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 155 (Cons 135 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 146 (Cons 225 (Cons 155 (Cons 166 (Cons 225 (Cons 154 (Cons 166 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 154 (Cons 177 (Cons 225 (Cons 154 (Cons 169 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 154 (Cons 162 (Cons 225 (Cons 154 (Cons 177 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 155 (Cons 129 (Cons 225 (Cons 154 (Cons 177 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 183 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 154 (Cons 185 (Cons 225 (Cons 155 (Cons 166 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 154 (Cons 179 (Cons 225 (Cons 154 (Cons 162 (Cons 225 (Cons 155 (Cons 151 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 32 (Cons 32 (Cons 225 (Cons 155 (Cons 139 (Cons 225 (Cons 154 (Cons 179 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 166 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 151 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 154 (Cons 190 (Cons 225 (Cons 154 (Cons 190 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 183 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 154 (Cons 185 (Cons 225 (Cons 155 (Cons 166 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 154 (Cons 179 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 151 (Cons 225 (Cons 155 (Cons 129 (Cons 225 (Cons 154 (Cons 179 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 154 (Cons 162 (Cons 225 (Cons 154 (Cons 190 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 166 (Cons 225 (Cons 155 (Cons 143 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 158 (Cons 225 (Cons 154 (Cons 171 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 154 (Cons 190 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 32 (Cons 32 (Cons 225 (Cons 154 (Cons 183 (Cons 225 (Cons 155 (Cons 129 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 185 (Cons 225 (Cons 155 (Cons 129 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 160 (Cons 225 (Cons 154 (Cons 169 (Cons 225 (Cons 154 (Cons 177 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 158 (Cons 225 (Cons 154 (Cons 177 (Cons 225 (Cons 155 (Cons 129 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 143 (Cons 225 (Cons 154 (Cons 190 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 155 (Cons 158 (Cons 225 (Cons 154 (Cons 169 (Cons 225 (Cons 155 (Cons 151 (Cons 225 (Cons 155 (Cons 150 (Cons 225 (Cons 155 (Cons 139 (Cons 225 (Cons 155 (Cons 171 (Cons 225 (Cons 154 (Cons 187 (Cons 225 (Cons 155 (Cons 154 (Cons 225 (Cons 155 (Cons 135 (Cons 225 (Cons 155 (Cons 143 (Cons 225 (Cons 154 (Cons 170 (Cons 225 (Cons 154 (Cons 190 (Cons 225 (Cons 155 (Cons 172 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 10 (Cons 206 (Cons 164 (Cons 206 (Cons 183 (Cons 32 (Cons 206 (Cons 179 (Cons 206 (Cons 187 (Cons 207 (Cons 142 (Cons 207 (Cons 131 (Cons 207 (Cons 131 (Cons 206 (Cons 177 (Cons 32 (Cons 206 (Cons 188 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 32 (Cons 206 (Cons 173 (Cons 206 (Cons 180 (Cons 207 (Cons 137 (Cons 207 (Cons 131 (Cons 206 (Cons 177 (Cons 206 (Cons 189 (Cons 32 (Cons 206 (Cons 181 (Cons 206 (Cons 187 (Cons 206 (Cons 187 (Cons 206 (Cons 183 (Cons 206 (Cons 189 (Cons 206 (Cons 185 (Cons 206 (Cons 186 (Cons 206 (Cons 174 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 207 (Cons 132 (Cons 206 (Cons 191 (Cons 32 (Cons 207 (Cons 131 (Cons 207 (Cons 128 (Cons 206 (Cons 175 (Cons 207 (Cons 132 (Cons 206 (Cons 185 (Cons 32 (Cons 207 (Cons 134 (Cons 207 (Cons 132 (Cons 207 (Cons 137 (Cons 207 (Cons 135 (Cons 206 (Cons 185 (Cons 206 (Cons 186 (Cons 207 (Cons 140 (Cons 32 (Cons 207 (Cons 131 (Cons 207 (Cons 132 (Cons 206 (Cons 185 (Cons 207 (Cons 130 (Cons 32 (Cons 206 (Cons 177 (Cons 206 (Cons 188 (Cons 206 (Cons 188 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 206 (Cons 180 (Cons 206 (Cons 185 (Cons 206 (Cons 173 (Cons 207 (Cons 130 (Cons 32 (Cons 207 (Cons 132 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 32 (Cons 206 (Cons 159 (Cons 206 (Cons 188 (Cons 206 (Cons 174 (Cons 207 (Cons 129 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 46 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 206 (Cons 156 (Cons 206 (Cons 191 (Cons 206 (Cons 189 (Cons 206 (Cons 172 (Cons 207 (Cons 135 (Cons 206 (Cons 183 (Cons 32 (Cons 206 (Cons 173 (Cons 206 (Cons 179 (Cons 206 (Cons 189 (Cons 206 (Cons 191 (Cons 206 (Cons 185 (Cons 206 (Cons 177 (Cons 32 (Cons 206 (Cons 183 (Cons 32 (Cons 206 (Cons 179 (Cons 206 (Cons 187 (Cons 207 (Cons 142 (Cons 207 (Cons 131 (Cons 207 (Cons 131 (Cons 206 (Cons 177 (Cons 32 (Cons 206 (Cons 188 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 32 (Cons 207 (Cons 131 (Cons 207 (Cons 132 (Cons 206 (Cons 185 (Cons 207 (Cons 130 (Cons 32 (Cons 206 (Cons 177 (Cons 206 (Cons 188 (Cons 206 (Cons 188 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 206 (Cons 180 (Cons 206 (Cons 185 (Cons 206 (Cons 173 (Cons 207 (Cons 130 (Cons 32 (Cons 207 (Cons 132 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 32 (Cons 206 (Cons 159 (Cons 206 (Cons 188 (Cons 206 (Cons 174 (Cons 207 (Cons 129 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 46 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 60 (Cons 112 (Cons 62 (Cons 10 (Cons 206 (Cons 177 (Cons 207 (Cons 128 (Cons 207 (Cons 140 (Cons 32 (Cons 207 (Cons 132 (Cons 206 (Cons 191 (Cons 32 (Cons 206 (Cons 134 (Cons 206 (Cons 190 (Cons 206 (Cons 185 (Cons 206 (Cons 191 (Cons 206 (Cons 189 (Cons 32 (Cons 206 (Cons 149 (Cons 207 (Cons 131 (Cons 207 (Cons 132 (Cons 206 (Cons 175 (Cons 60 (Cons 98 (Cons 114 (Cons 62 (Cons 10 (Cons 207 (Cons 132 (Cons 206 (Cons 191 (Cons 207 (Cons 133 (Cons 32 (Cons 206 (Cons 159 (Cons 206 (Cons 180 (Cons 207 (Cons 133 (Cons 207 (Cons 131 (Cons 207 (Cons 131 (Cons 206 (Cons 173 (Cons 206 (Cons 177 (Cons 32 (Cons 206 (Cons 149 (Cons 206 (Cons 187 (Cons 207 (Cons 141 (Cons 207 (Cons 132 (Cons 206 (Cons 183 (Cons 10 (Cons 10 Nil)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+main :: Bit 32
+main = length (list :: List (Bit 32)) -- decodeStream list Nil

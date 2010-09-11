@@ -1,0 +1,51 @@
+-- The virtual memory model of the Intel 386
+
+bitdata VirtAddr  = VirtAddr 
+                      { pageDir     :: Bit 10
+                      , pageTable   :: Bit 10
+                      , offset      :: Bit 12 
+                      }
+
+bitdata PDirEntry = PDirEntry
+                      { pageTable   :: Bit 12
+                                          -- PtrAlign 12 (Table 12 PTabEntry)
+    
+                      , bitsOS      :: Bit 3
+                      , dirty       :: Bit 1
+                      , accessed    :: Bit 1
+                      , perms       :: Perms
+                      , present     :: Bit 1
+                      }
+
+bitdata PTabEntry = PTabEntry
+                      { pageAddress :: Bit 12
+                      , bitsOS      :: Bit 3
+                      , dirty       :: Bit 1
+                      , accessed    :: Bit 1
+                      , perms       :: Perms
+                      , present     :: Bit 1
+                      }
+
+bitdata Perms     = Super   as B0 # _
+                  | UserR   as B10 
+                  | UserRW  as B11
+          
+
+{-
+
+cr3             :: PtrAlign 12 (Table 12 PDirEntry)
+                             
+(!)             :: IsPtr p => p (Table n a) -> Bit n -> Ptr a
+
+
+type PhysAddr     = Bit 32
+
+translate (VirtAddr a)  = cr3[a.pageDir]->pageTable[a.pageTable]->pageAddress
+                        # a.offset
+
+
+
+-} 
+
+
+

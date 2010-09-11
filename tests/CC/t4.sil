@@ -1,0 +1,8 @@
+let f (x::Int) :: Int -> Char -> Int = 
+    let g (y::Int) :: Char -> Int =
+      let h (z::Char) :: Int = x + y
+      in h
+    in g
+in f 1 2 'a'
+
+

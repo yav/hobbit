@@ -1,0 +1,7 @@
+type T = { Pad 16, x :: Stored (Bit 32) } 
+
+area x :: APtr 32 T
+
+main = x
+
+

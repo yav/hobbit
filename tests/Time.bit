@@ -1,0 +1,41 @@
+t = Period { e = x, m = x }
+    where x = 62
+
+duble = (x :: Bit 10) # x
+        where x = 12
+
+
+bits Time = Zero                          as 1 
+          | Never                         as 0
+          | Period { e::Bit 5, m::Bit 10} as B0 # e # m  
+
+
+add x y = (0 # x) + (0 # y)
+
+
+hack = Period {somePeriod | m = somePeriod.m << (1 :: Bit 8) }
+
+getMicro Zero       = 0 :: Bit 32
+getMicro (Period p) = (0 # p.m) << p.e
+
+
+--shift    :: Bit n -> Bit m -> Bit n
+shift x y = x -- should actually shift here ...
+
+someTime = Period { m=12, e=3 }
+somePeriod = f someTime
+
+f (Period x) = x
+
+
+doub p = {p | e = p.e + 1 }
+double (Period p) = {p | e = p.e + 1}
+doubleTime x = Period (double x)
+
+itP = doub somePeriod
+--itT = doub someTime
+
+id x = x
+
+getE { something | e = x } = x
+

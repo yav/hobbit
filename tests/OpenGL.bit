@@ -1,0 +1,98 @@
+import Prelude
+
+-- An example.
+-- In general, we can parametrize on the size of the array and its elements.
+type Nats = Array 4 (Stored Nat)
+
+-- An example vertex structure
+struct Vertex where
+  posn    :: Nats
+  color   :: Nats
+  normal  :: Nats 
+
+-- XXX: Hmm, can't use those as abbreviations, look into it
+type AreaField l x y = Field l (Ref x) (Ref y)
+
+-- Inteface to `glVertexPointer':
+glVertexPointer :: (Index n,
+                    AreaField .posn vertex posn_t,
+                    SizeOf vertex - SizeOf posn_t = stride )
+                => Ref (Array n vertex) -> M None
+glVertexPointer p = primGLVertexPointer_4_Nat stride (toBits vert)
+  where 
+  elem    = p @ 0                     -- hmm
+  vert    = elem.posn                 -- this is not very pretty
+  stride  = sizeOf elem - sizeOf vert -- ...
+
+  -- This should call the the 'C' function from the GL library.
+  primGLVertexPointer_4_Nat :: Nat -> Nat -> M None
+  primGLVertexPointer_4_Nat x y = do debug x
+                                     debug y
+                                     done 
+                                        
+
+-- Inteface to `glColorPointer':
+glColorPointer :: (Index n,
+                   Field .color (Ref vertex) (Ref Nats),
+                   SizeOf vertex s)
+                => Ref (Array n vertex) -> M None
+glColorPointer p = primGLColorPointer_4_Nat stride (toBits vert)
+  where 
+  elem    = p @ 0                     -- hmm
+  vert    = elem.color                -- this is not very pretty
+  stride  = sizeOf elem - sizeOf vert -- ...
+
+  -- This should call the the 'C' function from the GL library.
+  primGLColorPointer_4_Nat :: Nat -> Nat -> M None
+  primGLColorPointer_4_Nat x y = do debug x
+                                    debug y
+                                    done 
+
+-- Actually in both cases the stride is known statically:
+-- SizeOf vertex - SizeOf Nats
+-- However the C function wants a dynamic value...
+
+-- How can we turn a staic type number to a dynamic value?
+-- Like this (doesn't work...)
+-- 
+-- class Singleton n where
+--   theNum :: SNat n
+-- 
+-- toNum :: SNat n -> Nat
+--
+-- because writing: toNum theNum :: Singleton n => Nat
+-- which is ambiguous. 
+-- I've seen this in other contexts too 
+-- (e.g. the type of sizeOf requires a `fake' reference to turn a static number
+-- to a dynamic value)
+
+-- The whole thing would be simpler if we implemented `glVertexPointer'
+-- and fmaily as primitveis directly.  Then we would have access to the
+-- evidence from the context direclty.  We could then use the slightly
+-- simpler types:
+-- glVertexPointer :: (SizeOf vertex - SizeOf (Field .posn vertex) = stride)
+--                 => Ref (Array n vertex) -> M None
+
+
+
+
+
+
+-- XXX: The C primitives do not seem to require the size of the array?
+-- How does that work...
+
+
+
+
+
+area vertices :: Ref (Array 1024 Vertex)
+
+main = do glVertexPointer vertices
+          glColorPointer vertices
+          done
+  
+
+
+
+debug x = return (trace 10 x) -- should really add the printig prims
+                              -- to the linux RTS

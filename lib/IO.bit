@@ -1,0 +1,17 @@
+module IO where
+
+import Prelude
+
+primitive putChar :: Bit 8 -> M (Bit 0)
+
+putStr (x:xs) = do putChar x
+                   putStr xs
+putStr Nil    = done
+
+putStrLn xs   = do putStr xs
+                   putChar 10 -- nl
+
+
+
+
+

@@ -1,0 +1,8 @@
+import Prelude
+
+bitdata PCI = PCI { bus :: Bit 8, dev :: Bit 5, fn :: Bit 3 }
+
+main        = do return (trace 16 (toBits (PCI { bus = 2, dev = 2, fn = 2 })))
+                 done
+
+

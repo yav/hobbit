@@ -1,0 +1,21 @@
+let 
+
+{ mapRose (f :: Int -> Char) (t :: Tree_Int) :: Tree_Char 
+  = case t of 
+     { Node_Int (x :: Int) (xs :: List_Tree_Int) 
+        -> let y :: Char                  = f x in
+           let g :: Tree_Int -> Tree Char = mapRose f in
+           let ys :: List_Tree_Char       = mapList g xs in
+           Node_Char y ys
+     ; Tip -> Tip
+     }
+
+; mapList (f :: Tree_Int -> Tree_Char) (xs :: List_Tree_Int) :: List_Tree_Char
+  = case xs of
+    { Cons_List_Tree_Int (y :: Tree_Int) (ys :: List_Tree_Int)
+      -> 
+
+
+in 
+mapRose 
+

@@ -1,0 +1,10 @@
+:set -fglasgow-exts
+:set -imodules98
+:set -ihasm -iUtils
+:set -odir GHC_files
+:set -hidir GHC_files
+:set -W
+
+
+:def hobbit \_ -> readFile "ghci_hobbit"
+

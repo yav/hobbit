@@ -1,0 +1,25 @@
+let empty (x::Int) :: Bool = False in
+let member (s :: Int -> Bool) (x :: Int) :: Bool = s x in
+let insert (s :: Int -> Bool) (x :: Int) :: Int -> Bool = 
+  let s1 (y :: Int) :: Bool =   
+       let z :: Bool = Eq x y in
+       case z of 
+         { True  -> True 
+         ; False -> s x
+         } :: Bool
+  in s1 in 
+let { upto (n::Int) :: Int -> Bool =
+        let z :: Bool = Eq n 0 in
+        case z of
+          { True  -> empty
+          ; False -> let m :: Int         = n - 1 in
+                     let r :: Int -> Bool = upto m in
+                     insert r n
+          } :: Int -> Bool
+     } in
+let u :: Int -> Bool = upto 100 in 
+member u 100
+
+
+
+

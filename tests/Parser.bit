@@ -1,0 +1,59 @@
+data List a         = Nil | Cons a (List a)
+data Maybe a        = Nothing | Just a
+data Pair a b       = Pair a b
+data Parser a       = P (List (Bit 8) -> Maybe (Pair a (List (Bit 8))))
+
+bitdata Bool        = False as 0 :: Bit 32
+
+one x               = Cons x Nil
+
+runP xs (P f)       = f xs
+
+run xs p            = k (runP xs p)
+  where
+  k (Just (Pair x _)) = x
+
+fail                = P p
+  where p xs        = Nothing
+
+return x            = P p
+  where p xs        = Just (Pair x xs)
+
+(>>=) (P f) k       = P p1
+  where p1 xs       = p2 (f xs)
+        p2 Nothing            = Nothing
+        p2 (Just (Pair a ys)) = runP ys (k a) 
+
+map f p             = p >>= k
+  where k a         = return (f a)
+
+ap mf mx            = mx >>= k1
+  where k1 x        = mf >>= k2
+          where k2 f      = return (f x)
+
+(+++) p1 p2         = P c1
+  where c1 xs       = c2 (runP xs p1)
+          where c2 Nothing  = runP xs p2 
+                c2 x        = x
+
+many p              = (p >>= k1) +++ return Nil
+  where
+  k1 a              = many p >>= k2
+    where k2 as     = return (Cons a as)
+
+byte                = P p
+  where p (Cons x xs) = Just (Pair x xs)
+        p _           = Nothing
+
+flip f x y          = f y x
+
+word16le            = (#) `map` byte `ap` byte
+word16be            = flip (#) `map` byte `ap` byte
+
+byte2               = Pair `map` byte `ap` byte
+
+testData           :: List (Bit 8)
+testData            = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)))
+
+
+

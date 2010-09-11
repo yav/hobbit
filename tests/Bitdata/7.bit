@@ -1,0 +1,9 @@
+import Prelude
+
+bitdata A = A as B0
+bitdata B = B { x :: A }
+
+main = done
+
+
+

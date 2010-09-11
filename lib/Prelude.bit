@@ -1,0 +1,145 @@
+module Prelude (module Prelude, module Prims) where
+
+import Prims
+
+
+type MaxWidth     = 32
+type Nat          = Bit MaxWidth
+type None         = Bit 0     -- Nothing interesting
+type Stored       = LE 
+
+data APtr a r     = Null | Ptr (ARef a r)
+bitdata Bool      = False as B0 | True as B1
+
+done                :: M None
+done                 = return 0
+
+-- Bits utilities --------------------------------------------------------------
+type Ref          = ARef 1
+type Ptr          = APtr 1
+
+
+type Byte         = Bit 8
+type Word         = Bit 16
+type DWord        = Bit 32
+
+type Char         = Bit 8
+
+type Pad n        = Array n (Stored (Bit 8))
+
+upper (x # _)     = x
+lower (_ # x)     = x
+
+
+
+
+
+-- Tables ----------------------------------------------------------------------
+
+
+initTableFrom x y t f = loopFromTo x y (\i -> writeRef (t @ i) (f i))
+initTable t f         = initTableFrom 0 maxVal t f
+
+
+
+ 
+
+-- Boolean ---------------------------------------------------------------------
+
+
+(&&&) False _     = False
+(&&&) _ y         = y
+
+(|||) False y     = y
+(|||) _ _         = True
+
+not False         = True
+not True          = False
+
+-- Maybe -----------------------------------------------------------------------
+
+data Maybe a  = Nothing | Just a 
+
+maybe x Nothing   = x
+maybe _ (Just y)  = y
+
+
+-- Lists -----------------------------------------------------------------------
+
+data List a   = Nil | a : List a
+
+fold add Nil tot          = tot
+fold add (x : xs) tot  = fold add xs (add x tot)
+
+length xs = fold inc xs 0
+  where inc _ x = x + 1
+
+reverse xs  = fold (:) xs Nil
+(++) xs ys  = fold (:) (reverse xs) ys
+
+head (x : _)   = x
+tail (_ : xs)  = xs
+
+last (x : Nil) = x
+last (_ : xs)  = last xs
+
+fromTo n m  = loop n m Nil
+  where loop n m xs | if m < n  = reverse xs
+                    | if m == n = reverse (n : xs)
+        loop n m xs             = loop (n+1) m (n : xs) 
+
+
+sum xs  = fold (+) xs 0
+prod xs = fold (*) xs 1
+
+
+-- Pairs------------------------------------------------------------------------
+
+-- data ()         = ()
+bitdata ()      = () as (0 :: Bit 0) 
+
+data (,) a b    = (a,b)
+
+fst (x,_)       = x
+snd (_,x)       = x
+
+data (,,) a b c = (a,b,c)
+
+
+
+
+
+-- M ---------------------------------------------------------------------------
+
+
+forEachElem (x : xs) f   = do f x 
+                              forEachElem xs f
+forEachElem Nil _        = done
+
+minIx                    :: Index n => Ix n
+minIx                     = minVal
+
+maxIx                    :: Index n => Ix n
+maxIx                     = maxVal
+
+forEachIx m               = forEachIxFromTo minIx maxIx m
+forEachIxFrom start m     = forEachIxFromTo start maxIx m
+forEachIxTo end m         = forEachIxFromTo minIx end m
+
+forEachIxFromTo start end m 
+  = do m start
+       case start of
+         next - 1 | if next <= end -> forEachIxFromTo next end m
+         _ -> done
+  
+
+loopFromTo x y _ | if y < x = done
+loopFromTo x y m      = untilM x (\i -> i == y) (\i -> i + 1) m
+
+untilM x stop upd m   = do m x
+                           if stop x then done 
+                                     else untilM (upd x) stop upd m
+
+
+
+

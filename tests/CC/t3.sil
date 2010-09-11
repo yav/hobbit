@@ -1,0 +1,8 @@
+let z :: Int = 2 in
+let id (f :: Int -> Int) :: Int -> Int = f in
+let { f (x::Int) :: Int = id g x
+    ; g (x::Int) :: Int = f z
+    } in
+f 1
+
+

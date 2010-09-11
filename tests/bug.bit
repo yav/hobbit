@@ -1,0 +1,14 @@
+module Main where
+
+import Prelude
+
+bitdata Bad = Bad { ix :: Ix 2 } deriving FromBits
+
+area xxx :: Ptr (Array 2 (Stored Nat))
+
+main = case fromBits 7 of
+         Bad x -> do readRef (xxx @@ x.ix)
+                     done
+
+
+

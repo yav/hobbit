@@ -1,0 +1,111 @@
+module Main where
+
+-- This file contains a bitdata encoding of the Zilog Z80 instruction set
+--
+
+import Prelude
+
+bitdata Instr = NOP  as 0x00 | HALT as 0x76
+              | EI   as 0xFB | DI   as 0xF3
+              | OUT  as 0xD3 | IN   as 0xDB
+
+                -- Special prefixes:
+              | IX as 0xDD  -- use IX / (IX+d) instead of HL / (HL)
+              | IY as 0xFD  -- use IY / (IY+d) instead of HL / (HL)
+              | CB as 0xCB  -- bit operation prefix
+              | ED as 0xED  -- extended instruction prefix
+
+                -- Data transfer:
+              | LD  { dst::Reg, src::Reg }  as B01 # dst # src
+
+              | LDm { m::Mem }              as B00 # m  # 0xA
+              | STm { m::Mem }              as B00 # m  # 0x2
+              | LDimm { r::Reg }            as B00 # r   # B110
+              | LDimm16 { r::Reg16 }        as B00 # r  # 0x1
+              | PUSH { r::Reg16 }           as B11 # r  # 0x5
+              | POP  { r::Reg16 }           as B11 # r  # 0x1
+              | LDSPHL as 0xF9
+ 
+                -- Exchanges:
+              | EXAFAF as 0x08 | EXX    as 0xD9
+              | EXDEHL as 0xEB | EXSPHL as 0xE3
+
+                -- ALU instruction with register/immediate argument:
+              | ALUreg { op::ALUop, r::Reg } as B10 # op # r
+              | ALUimm { op::ALUop }         as B11 # op # B110
+
+                -- Accumulator rotate:
+              | RLCA as 0x07 | RRCA as 0x0F | RLA as 0x17 | RRA as 0x1F
+
+                -- General purpose AF operations:
+              | DAA  as 0x27 | CPL  as 0x2F | CCF as 0x3F | SCF as 0x37
+
+                -- Increment and decrement:
+              | INC   { r::Reg }    as B00 # r  # B100
+              | DEC   { r::Reg }    as B00 # r  # B101
+              | INC16 { r::Reg16 }  as B00 # r # B0011
+              | DEC16 { r::Reg16 }  as B00 # r # B1011
+              | ADD16 { r::Reg16 }  as B00 # r # B1001
+
+                -- Control Transfer:
+              | JP   as 0xC3 | JPC   { c::Cond }  as B11 # c  # B010
+              | JR   as 0x18 | JRC   { c::RCond } as B001 # c # B000
+              | CALL as 0xCD | CALLC { c::Cond }  as B11 # c  # B100
+              | RET  as 0xC9 | RETC  { c::Cond }  as B11 # c  # B000
+              | JPHL as 0xE9
+              | DJNZ as 0x10
+              | RST  { n::Bit 3 } as B11 # n # B111
+
+bitdata Reg   = A as B111 | B as B000 | C as B001 | D as B010
+              | E as B011 | H as B100 | L as B101 | MemHL as B110
+
+
+bitdata Reg16 = BC as B00 | DE as B01 | HL as B10 | SP as B11 | AF as B11
+
+bitdata Shift = RLC as B000 | RRC as B001 | RL  as B010 | RR  as B011
+              | SLA as B100 | SRA as B101               | SRL as B111
+
+bitdata Cond  = NZ as B000 | Z  as B001 | NC as B010 | CC as B011
+              | PO as B100 | PE as B101 | P  as B110 | M  as B111
+
+bitdata RCond = RNZ as B00 | RZ as B01  | RNC as B10 | RC as B11
+
+bitdata ALUop = ADD as B000 | ADC as B001 | SUB as B010 | SBC as B011
+              | AND as B100 | XOR as B101 | OR  as B110 | CMP as B111
+
+bitdata Mem   = MemBC as B00   -- use BC as address
+              | MemDE as B01   -- use DE as address
+              | Mem16 as B10   -- immediate address for 16 bits (into HL)
+              | Mem8  as B11   -- immediate address for one byte (into A)
+
+-- Interpretation for the byte following an 0xED byte:
+bitdata Extd  = -- Interrupt and refresh registers:
+                LDIA as 0x47 | LDRA as 0x4F | LDAI as 0x57 | LDAR as 0x5F
+              | IM0  as 0x46 | IM1  as 0x56 | IM2  as 0x5E
+
+                -- Load/store 16 bits
+              | LDM16 { r::Reg16 } as B00 # r # 0xB
+              | STM16 { r::Reg16 } as B00 # r # 0x3
+
+                -- Extended ALU operations
+              | ADC16 { r::Reg16 } as B00 # r # 0xA
+              | SBC16 { r::Reg16 } as B00 # r # 0x2
+
+                -- Register indirect I/O
+              | INR  { r::Reg } as B01 # r # 0x0
+              | OUTR { r::Reg } as B01 # r # 0x1
+
+                -- Block transfer and search
+              | LDI  as 0xA0 | LDIR as 0xB0 | LDD  as 0xA8 | LDDR as 0xB8
+              | CPI  as 0xA1 | CPIR as 0xB1 | CPD  as 0xA9 | CPDR as 0xB9
+              | NEG  as 0x44 :: Bit 8
+
+                -- Block I/O
+              | INI  as 0xA2 | INIR as 0xB2 | IND  as 0xAA | INDR as 0xBA
+              | OUTI as 0xA3 | OTIR as 0xB3 | OUTD as 0xAB | OTDR as 0xBB
+
+-- Interpretation for the byte following an 0xCB byte:
+bitdata BitOp = ShiftOp { s::Shift, r::Reg }  as B00 # s # r
+              | BIT     { n::Bit 3, r::Reg }  as B01 # n # r
+              | RES     { n::Bit 3, r::Reg }  as B10 # n # r
+              | SET     { n::Bit 3, r::Reg }  as B11 # n # r

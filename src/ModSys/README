@@ -1,0 +1,23 @@
+This is the source code for the Haskell 98 module system as
+described in the paper: 
+"A Formal Specification of the Haskell 98 Module System"
+by Iavor S. Diatchki, Mark P. Jones, Thomas Hallgren
+published in the Haskell workshop 2002
+
+
+Files
+=====
+
+README            - this file 
+Sem.lhs           - putting it all together
+AST.lhs           - the abstract syntax for the module ssytem
+Modules.lhs       - this is where all the important work is done
+CheckModules.lhs  - error checking
+NamesEntities.lhs - some utilities for names and entities
+Relations.lhs     - the implementaion of relations
+Names.hs          - the abstract type of names (replace with your favourite)
+Ents.hs           - the abstract type of entities  (replace with your favourite)
+
+
+
+  

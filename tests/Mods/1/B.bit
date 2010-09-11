@@ -1,0 +1,4 @@
+module B where
+
+g x = x.l
+

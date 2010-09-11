@@ -1,0 +1,16 @@
+bitdata FPage  = FPage { base :: Bit 22, size :: Bit 6, perms :: Bit 3 }
+                as base # size # B0 # perms
+            | NilPage as 0
+
+getSize NilPage     = 0
+getSize (FPage p)   = p.size
+
+setSize NilPage _   = NilPage
+setSize (FPage p) x = FPage { p | size = x } 
+    
+ex1   = show (getSize (FPage { base = 2, size = 3, perms = 2 }))
+ex2   = show (getSize (fromBits (0 # B1000) :: FPage))
+
+main  :: Bit 32
+main  = 2
+

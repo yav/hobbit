@@ -1,0 +1,60 @@
+
+bitdata Bool  = False as 0::Bit 1
+           | True  as 1
+
+or True  _  = True
+or False x  = x
+
+and False _ = False
+and True  x = x
+
+not False   = True
+not True    = False
+
+id x        = x
+
+(<) x y     = and (x <= y) (not (x == y))
+(>=) x y    = not (x < y)
+(>) x y     = not (x <= y)
+
+bitdata Perms = Perms { r :: Bit 1, w :: Bit 1, x :: Bit 1}
+defaultPerms  = Perms { r = 0, w = 0, x = 0 }
+
+bitdata Fpage  = Fpage { base :: Bit 22
+                    , size :: Bit 6
+                    , perms = defaultPerms :: Perms }
+                        as base # size # B0 # perms if size >= 12
+               | Nilpage as 0
+
+getSize Nilpage    = 0
+getSize (Fpage fp) = fp.size
+
+setSize Nilpage    _ = Nilpage
+setSize (Fpage fp) x = Fpage {fp | size = x}
+
+add x y = (0 # x) + (0 # y)
+
+subset Nilpage _       = True
+subset _       Nilpage = False
+subset (Fpage fp1) (Fpage fp2) = and (fp1.base >= fp2.base) (end fp1 <= end fp2)
+   where end fp = (add fp.base fp.size)::Bit 22
+
+equalFP fp1 fp2 = and (subset fp1 fp2) (subset fp2 fp1)
+
+contains Nilpage    _  = False
+contains (Fpage fp) vi = and (fp.base <= vi) ((fp.base + (0 # fp.size)) >= vi)
+
+overlaps (Fpage {base = b1, size = s1}) (Fpage {base = b2, size = s2})
+   | b1 < b2 = add b1 s1 >= b2
+   | b1 > b2 = b1 <= add b2 s2 
+   | True    = True
+
+fpTest = Fpage {base=27, size=12,perms=fromBits B111}
+
+bitdata MsgTag = Tag { label :: Bit 16, flags :: Bit 4, t :: Bit 6, u :: Bit 6 }
+
+bitdata Typed = MapItem { sndBase :: Bit 22, more :: Bit 1}
+               as sndBase # (0::Bit 6) # B100 # more
+           | GrantItem { sndBase :: Bit 22, more :: Bit 1}
+               as sndBase # (0::Bit 6) # B101 # more
+

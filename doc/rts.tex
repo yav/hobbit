@@ -1,0 +1,92 @@
+\documentclass{article}
+
+\title{Overview of the Compiler Run-Time System}
+\author{Iavor S. Diatchki}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+We aim for a fairly standard run-time system, that supports garbage
+collection and efficient tail calls.  There are two memory regions used
+by the run-time system: the stack, and the heap.  The stack is used
+to store function arguments and local variables.  The heap stores
+dynamically allocated objects.
+
+\section{Calling Convention}
+\label{call-sec}
+
+The compiler uses the `standard' calling convention: arguments are 
+allocated on the the stack by the caller, and deallocated by the callee.
+This convention enables the implementation of efficient tail-calls,
+because functions are not required to return to deallocate their arguments.
+Figure \ref{frame-fig} shows a typical stack frame.
+\begin{figure}[!ht]
+\includegraphics{frame.ps}
+\caption{A stack frame}
+\label{frame-fig}
+\end{figure}
+The stack grows towards smaller addresses.  Notice that the return address
+of a function is placed on the stack before the arguments (i.e., it is the
+first argument to every function).  This means that when we make a tail call
+to a function with a different number of arguments we do not need to adjust
+the return address.  On the negative side, it also means that we cannot
+use the {\tt call} instruction to call a function, instead we use an 
+explicit {\tt jmp}.  The code we generate for a function call is like this:
+\begin{verbatim}
+    push $L
+    push A1
+    push A2
+    jmp F
+    .long scav
+L:  ... 
+\end{verbatim}
+The instruction \verb|.long scav| provides data for the garbage collector
+and is described in Section \ref{gc-sec}.
+
+
+
+
+\section{Garbage Collection}
+\label{gc-sec}
+
+There is another reason that we cannot use the {\tt call} instruction to 
+call functions, and it has to do with the way we arrange for garbage collection
+support.  When we start a garbage collection, we need to know an initial
+set of life pointers to objects in the heap (the so called `root set').
+The pointers that are on the run-time stack and any global pointer variables
+form a conservative approximation to this set, because they are variables 
+in functions that will be resumed at some point.  
+So we need to know which values on the stack are pointers in
+the heap and which are not.   While generating code the compiler can keep
+track of the locations of the pointers in a single stack frame.  However,
+what frames are present on the stack cannot be determined until run time.
+To work around this problem, we observe that the return address for a function
+uniquely identifies the frame of the calleer.  So we arrange that the location
+before the return address of a function contains a pointer to the scavange
+method for the frame.  Thus, to `walk the stack' we need to know how to
+scavange the first frame, and then we can use the return addresses to  
+scavange the following frames.  We also need to know when we have
+finished processing the stack.  We do this by ensuring that the code
+that calls the {\tt main} function of a program places a 0 before the code
+where execution continues.  Thus, walking the stack terminates when the
+scavange method for a frame is 0:
+\begin{verbatim}
+void walk_stack(DWord* frame, ScavFun scav) {
+  do {
+    DWord* ret;
+    frame = scav(frame);
+    ret   = (DWord*)(*frame);
+    scav  = (ScavFun)ret[-1];
+    --frame;
+  } while (scav != 0);
+  scav_globals();
+}
+\end{verbatim}
+
+
+
+\end{document}
+
+
+

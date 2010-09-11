@@ -1,0 +1,11 @@
+bits T            = A | B { x :: Bit 12 }
+
+a A               = B1
+b (B a)           = a 
+c (B { x = 2 })   = 3
+d { a | x = B0 }  = B1
+
+
+
+
+

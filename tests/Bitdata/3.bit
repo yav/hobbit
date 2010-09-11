@@ -1,0 +1,11 @@
+import Prelude
+
+bitdata Page    = Page { page :: Bit 20 } 
+bitdata Off     = Off { off :: Bit 12 }
+bitdata Addr    = Addr { page :: Page, off :: Off }
+
+
+main = done
+
+
+

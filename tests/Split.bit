@@ -1,0 +1,16 @@
+
+
+split ((x :: Bit 10) # (y :: Bit 6)) = y
+
+upper     :: Bit 32 -> Bit 16
+upper ((x :: Bit 16) # _) = x 
+
+x = (B1 # B1) :: Bit 2
+
+splitArb (x # y) = x
+
+
+main :: Bit 32 -> Bit 12
+main = splitArb
+
+

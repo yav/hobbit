@@ -1,0 +1,9 @@
+module A where
+
+import B
+
+f x = x.l
+
+main = B00
+
+
