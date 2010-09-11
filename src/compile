@@ -1,2 +1,2 @@
-hc -p../lib $1 -o out && gcc -g -I ../rts ../rts/rts.a out.s out.c
+./hc -p../lib $1 -o out && gcc -g -I ../rts ../rts/rts.a out.s out.c
 
